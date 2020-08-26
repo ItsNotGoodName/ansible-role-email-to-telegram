@@ -38,6 +38,7 @@
         regexp: "smtpd_sasl_auth_enable.*=.*$",
         line: "smtpd_sasl_auth_enable = yes",
       }
+    - { regexp: "myorigin.*=.*$", line: "myorigin = localhost.localdomain" }
 
 - name: Config saslauthd
   lineinfile:
