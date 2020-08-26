@@ -1,0 +1,16 @@
+- name: Create email receiver
+  user:
+    name: "{{ TBOT_USER }}"
+
+- name: Install saslauthd and postfix
+  apt:
+    name:
+      - postfix
+      - saslauthd
+    state: present
+
+- name: Postfix started and enabled
+  systemd:
+    name: postfix
+    state: started
+    enabled: yes
