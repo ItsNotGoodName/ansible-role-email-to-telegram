@@ -39,6 +39,10 @@
         line: "smtpd_sasl_auth_enable = yes",
       }
     - { regexp: "myorigin.*=.*$", line: "myorigin = localhost.localdomain" }
+    - {
+        regexp: "mydestination.*=.*$",
+        line: "mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain, localhost.localdomain",
+      }
 
 - name: Config saslauthd
   lineinfile:
@@ -68,3 +72,9 @@
     name: "Fixes saslauthd run directory"
     special_time: reboot
     job: "/opt/whydoesthisexist.sh"
+
+- name: Mail folder is writeable
+  file:
+    dest: /var/mail
+    mode: "777"
+    state: directory
