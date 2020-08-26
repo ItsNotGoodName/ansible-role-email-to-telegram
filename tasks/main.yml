@@ -1,12 +1,12 @@
 - name: Create email receiver
   user:
-    name: "{{ TBOT_USER }}"
+    name: "{{ tbot_user }}"
 
 - name: Install saslauthd and postfix
   apt:
     name:
       - postfix
-      - saslauthd
+      - sasl2-bin
     state: present
 
 - name: Postfix started and enabled
@@ -14,3 +14,56 @@
     name: postfix
     state: started
     enabled: yes
+
+- name: Create sasl2 folder
+  file:
+    dest: /etc/sasl2
+    state: directory
+
+- name: Copy smtpd conf
+  copy:
+    src: smtpd.conf
+    dest: /etc/postfix/sasl/smtpd.conf
+  notify: Restart postfix
+
+- name: Config postfix file
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line}}"
+  notify: Restart postfix
+  with_items:
+    - { regexp: "smtpd_sasl_path.*=.*$", line: "smtpd_sasl_path = smtpd" }
+    - {
+        regexp: "smtpd_sasl_auth_enable.*=.*$",
+        line: "smtpd_sasl_auth_enable = yes",
+      }
+
+- name: Config saslauthd
+  lineinfile:
+    path: /etc/default/saslauthd
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line}}"
+  notify: Restart saslauthd
+  with_items:
+    - { regexp: "^START.*=.*$", line: "START=yes" }
+    - { regexp: "^MECHANISMS.*=.*$", line: 'MECHANISMS="shadow"' }
+
+- name: Add postfix to sasl group
+  user:
+    name: postfix
+    groups: sasl
+    append: "yes"
+
+- name: Copy smtpd conf
+  copy:
+    src: whydoesthisexist.sh
+    dest: /opt/
+    mode: "0744"
+  notify: Restart postfix
+
+- name: Start postfix and sasl run fix script on restart
+  cron:
+    name: "Fixes saslauthd run directory"
+    special_time: reboot
+    job: "/opt/whydoesthisexist.sh"
