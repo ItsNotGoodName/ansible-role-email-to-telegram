@@ -1,6 +1,7 @@
 - name: Create email receiver
   user:
     name: "{{ tbot_user }}"
+    shell: "/bin/bash"
 
 - name: Install saslauthd and postfix
   apt:
