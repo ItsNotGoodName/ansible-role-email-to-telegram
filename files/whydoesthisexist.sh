@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# http://www.jimmy.co.at/weblog/2005/12/05/postfix-and-sasl-debian/
+
 rm -r /var/run/saslauthd/
 mkdir -p /var/spool/postfix/var/run/saslauthd
 ln -s /var/spool/postfix/var/run/saslauthd /var/run
