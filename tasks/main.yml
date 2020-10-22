@@ -1,8 +1,3 @@
-- name: Create email receiver
-  user:
-    name: "{{ tbot_user }}"
-    shell: "/bin/bash"
-
 - name: Install saslauthd and postfix
   apt:
     name:
@@ -21,13 +16,13 @@
     dest: /etc/sasl2
     state: directory
 
-- name: Copy smtpd conf
+- name: Copy smtpd.conf
   copy:
     src: smtpd.conf
     dest: /etc/postfix/sasl/smtpd.conf
   notify: Restart postfix
 
-- name: Config postfix file
+- name: Configure postfix
   lineinfile:
     path: /etc/postfix/main.cf
     regexp: "{{ item.regexp }}"
@@ -45,7 +40,7 @@
         line: "mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain, localhost.localdomain",
       }
 
-- name: Config saslauthd
+- name: Configure saslauthd
   lineinfile:
     path: /etc/default/saslauthd
     regexp: "{{ item.regexp }}"
@@ -61,18 +56,18 @@
     groups: sasl
     append: "yes"
 
-- name: Copy smtpd conf
+- name: Copy fix-saslauthd.sh
   copy:
-    src: whydoesthisexist.sh
+    src: fix-saslauthd.sh
     dest: /opt/
     mode: "0744"
   notify: Restart postfix
 
-- name: Start postfix and sasl run fix script on restart
+- name: Start postfix and run fix-saslauthd script on reboot
   cron:
     name: "Fixes saslauthd run directory"
     special_time: reboot
-    job: "/opt/whydoesthisexist.sh"
+    job: "/opt/fix-saslauthd.sh"
 
 - name: Mail folder is writeable
   file:

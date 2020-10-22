@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# Needed for debian saslauthd to work
 # http://www.jimmy.co.at/weblog/2005/12/05/postfix-and-sasl-debian/
 
 rm -r /var/run/saslauthd/
