@@ -75,7 +75,7 @@
   pip:
     name: git+https://github.com/ItsNotGoodName/email-to-telegram.git
 
-- name: Create email-to_telegram config directory
+- name: Create email-to-telegram config directory
   file:
     path: /etc/email-to-telegram/
     state: directory
@@ -86,3 +86,15 @@
     dest: /etc/email-to-telegram/config.ini
     owner: telegram
     mode: '0600'
+
+- name: Copy email-to-telegram service
+  template:
+    src: email-to-telegram.service
+    dest: /etc/systemd/system/email-to-telegram.service
+  notify: Restart email-to-telegram
+
+- name: Start and enable email-to-telegram
+  systemd:
+    name: email-to-telegram
+    state: started
+    enabled: yes

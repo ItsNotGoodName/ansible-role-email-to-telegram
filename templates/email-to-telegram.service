@@ -1,0 +1,12 @@
+[Unit]
+Description=Starts email-to-telegram-bot
+After=network.target
+
+[Service]
+User=telegram
+ExecStart=email-to-telegram
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

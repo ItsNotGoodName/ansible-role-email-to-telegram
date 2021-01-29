@@ -7,3 +7,8 @@
   systemd:
     name: saslauthd
     state: restarted
+
+- name: Restart email-to-telegram
+  systemd:
+    name: email-to-telegram
+    state: restarted
