@@ -2,13 +2,16 @@
   systemd:
     name: postfix
     state: restarted
+    daemon-reload: true
 
 - name: Restart saslauthd
   systemd:
     name: saslauthd
     state: restarted
+    daemon-reload: true
 
 - name: Restart email-to-telegram
   systemd:
     name: email-to-telegram
     state: restarted
+    daemon-reload: true

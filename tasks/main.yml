@@ -44,22 +44,22 @@
   user:
     name: postfix
     groups: sasl
-    append: "yes"
+    append: yes
 
 - name: Copy fix_saslauthd.sh script
   copy:
     src: fix_saslauthd.sh
     dest: /opt/
-    mode: "0744"
+    mode: 0744
   notify: Restart postfix
   register: copy_fix_saslauthd
   when: ansible_distribution == 'Debian'
 
 - name: Run fix_saslauthd script on reboot
   cron:
-    name: "Fixes saslauthd run directory for debian"
+    name: Fixes saslauthd run directory for debian
     special_time: reboot
-    job: "/opt/fix_saslauthd.sh"
+    job: /opt/fix_saslauthd.sh
   when: ansible_distribution == 'Debian'
 
 - name: Run fix_saslauthd script
@@ -85,7 +85,7 @@
     src: config.ini
     dest: /etc/email-to-telegram/config.ini
     owner: telegram
-    mode: '0600'
+    mode: 0600
 
 - name: Copy email-to-telegram service
   template:
