@@ -1,66 +1,65 @@
-- name: install saslauthd and postfix
+- name: Install saslauthd and postfix
   package:
     name:
       - postfix
       - sasl2-bin
     state: present
 
-- name: postfix started and enabled
+- name: Start and enable postfix
   service:
     name: postfix
     state: started
     enabled: yes
 
-- name: create sasl2 config folder
+- name: Create sasl2 config folder
   file:
     dest: /etc/sasl2
     state: directory
 
-- name: copy smtpd.conf
+- name: Copy smtpd.conf
   copy:
     src: smtpd.conf
     dest: /etc/postfix/sasl/smtpd.conf
-  notify: restart postfix
+  notify: Restart postfix
 
-- name: copy main.cf
+- name: Copy main.cf
   copy:
     src: main.cf
     dest: /etc/postfix/main.cf 
-  notify: restart postfix
+  notify: Restart postfix
 
-- name: configure saslauthd
+- name: Configure saslauthd
   lineinfile:
     path: /etc/default/saslauthd
     regexp: "{{ item.regexp }}"
     line: "{{ item.line}}"
-  notify: restart saslauthd
+  notify: Restart saslauthd
   with_items:
     - { regexp: "^START.*=.*$", line: "START=yes" }
     - { regexp: "^MECHANISMS.*=.*$", line: 'MECHANISMS="shadow"' }
 
-- name: add postfix user to sasl group
+- name: Add postfix user to sasl group
   user:
     name: postfix
     groups: sasl
     append: "yes"
 
-- name: copy fix-saslauthd.sh script
+- name: Copy fix-saslauthd.sh script
   copy:
     src: fix-saslauthd.sh
     dest: /opt/
     mode: "0744"
-  notify: restart postfix
+  notify: Restart postfix
   when: ansible_distribution == 'Debian'
 
-- name: run fix-saslauthd script on reboot
+- name: Run fix-saslauthd script on reboot
   cron:
     name: "fixes saslauthd run directory for debian"
     special_time: reboot
     job: "/opt/fix-saslauthd.sh"
   when: ansible_distribution == 'Debian'
 
-- name: make mail folder writeable
-  file:
-    dest: /var/mail
-    mode: "777"
-    state: directory
+- name: Add telegram user and assign it to the mail group
+  user:
+    name: telegram
+    group: mail
