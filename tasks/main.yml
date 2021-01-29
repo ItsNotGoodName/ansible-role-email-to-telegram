@@ -1,75 +1,65 @@
-- name: Install saslauthd and postfix
-  apt:
+- name: install saslauthd and postfix
+  package:
     name:
       - postfix
       - sasl2-bin
     state: present
 
-- name: Postfix started and enabled
-  systemd:
+- name: postfix started and enabled
+  service:
     name: postfix
     state: started
     enabled: yes
 
-- name: Create sasl2 folder
+- name: create sasl2 config folder
   file:
     dest: /etc/sasl2
     state: directory
 
-- name: Copy smtpd.conf
+- name: copy smtpd.conf
   copy:
     src: smtpd.conf
     dest: /etc/postfix/sasl/smtpd.conf
-  notify: Restart postfix
+  notify: restart postfix
 
-- name: Configure postfix
-  lineinfile:
-    path: /etc/postfix/main.cf
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line}}"
-  notify: Restart postfix
-  with_items:
-    - { regexp: "smtpd_sasl_path.*=.*$", line: "smtpd_sasl_path = smtpd" }
-    - {
-        regexp: "smtpd_sasl_auth_enable.*=.*$",
-        line: "smtpd_sasl_auth_enable = yes",
-      }
-    - { regexp: "myorigin.*=.*$", line: "myorigin = localhost.localdomain" }
-    - {
-        regexp: "mydestination.*=.*$",
-        line: "mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain, localhost.localdomain",
-      }
+- name: copy main.cf
+  copy:
+    src: main.cf
+    dest: /etc/postfix/main.cf 
+  notify: restart postfix
 
-- name: Configure saslauthd
+- name: configure saslauthd
   lineinfile:
     path: /etc/default/saslauthd
     regexp: "{{ item.regexp }}"
     line: "{{ item.line}}"
-  notify: Restart saslauthd
+  notify: restart saslauthd
   with_items:
     - { regexp: "^START.*=.*$", line: "START=yes" }
     - { regexp: "^MECHANISMS.*=.*$", line: 'MECHANISMS="shadow"' }
 
-- name: Add postfix to sasl group
+- name: add postfix user to sasl group
   user:
     name: postfix
     groups: sasl
     append: "yes"
 
-- name: Copy fix-saslauthd.sh
+- name: copy fix-saslauthd.sh script
   copy:
     src: fix-saslauthd.sh
     dest: /opt/
     mode: "0744"
-  notify: Restart postfix
+  notify: restart postfix
+  when: ansible_distribution == 'Debian'
 
-- name: Start postfix and run fix-saslauthd script on reboot
+- name: run fix-saslauthd script on reboot
   cron:
-    name: "Fixes saslauthd run directory"
+    name: "fixes saslauthd run directory for debian"
     special_time: reboot
     job: "/opt/fix-saslauthd.sh"
+  when: ansible_distribution == 'Debian'
 
-- name: Mail folder is writeable
+- name: make mail folder writeable
   file:
     dest: /var/mail
     mode: "777"
