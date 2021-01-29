@@ -61,7 +61,7 @@
   when: ansible_distribution == 'Debian'
 
 - name: Run fix_saslauthd script
-  script: /opt/fix_saslauthd.sh
+  command: /opt/fix_saslauthd.sh
   when: ansible_distribution == 'Debian' and copy_fix_saslauthd.changed
 
 - name: Add telegram user and assign it to the mail group
