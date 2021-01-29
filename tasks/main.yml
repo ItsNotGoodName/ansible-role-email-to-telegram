@@ -1,8 +1,10 @@
-- name: Install saslauthd and postfix
+- name: Install saslauthd, postfix, pip3, git
   package:
     name:
       - postfix
       - sasl2-bin
+      - python3-pip
+      - git
     state: present
 
 - name: Start and enable postfix
@@ -68,3 +70,19 @@
   user:
     name: telegram
     group: mail
+
+- name: Install email-to-telegram git version via pip
+  pip:
+    name: git+https://github.com/ItsNotGoodName/email-to-telegram.git
+
+- name: Create email-to_telegram config directory
+  file:
+    path: /etc/email-to-telegram/
+    state: directory
+
+- name: Copy config.ini for email-to-telegram
+  template:
+    src: config.ini
+    dest: /etc/email-to-telegram/config.ini
+    owner: telegram
+    mode: '0600'
