@@ -1,7 +1,13 @@
-# debian-postfix-role
+# role-email-to-telegram
 
-Setup for postfix on Debian Buster for receiving emails via SMTP. Authentication is done through linux users.
+Ansible role for setting up [email-to-telegram](https://github.com/ItsNotGoodName/email-to-telegram) on Debian 10.
 
+## Variables
+```yaml
+# Token from BotFather
+telegram_token: 12345678
 
-## Todo 
-- limit authentication to specified users
+telegram_transfers:
+- { to_address: channel1@telegram.lan, chat_id: -1001111111111 }
+- { to_address: channel2@telegram.lan, chat_id: -1002222222222 }
+```
