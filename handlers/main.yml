@@ -1,3 +1,4 @@
+---
 - name: Restart postfix
   systemd:
     name: postfix

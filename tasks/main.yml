@@ -1,3 +1,4 @@
+---
 - name: Install saslauthd, postfix, pip3, git
   package:
     name:
@@ -11,7 +12,7 @@
   service:
     name: postfix
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Create sasl2 config folder
   file:
@@ -27,7 +28,7 @@
 - name: Copy main.cf
   copy:
     src: main.cf
-    dest: /etc/postfix/main.cf 
+    dest: /etc/postfix/main.cf
   notify: Restart postfix
 
 - name: Configure saslauthd
@@ -37,14 +38,16 @@
     line: "{{ item.line}}"
   notify: Restart saslauthd
   with_items:
-    - { regexp: "^START.*=.*$", line: "START=yes" }
-    - { regexp: "^MECHANISMS.*=.*$", line: 'MECHANISMS="shadow"' }
+    - regexp: "^START.*=.*$"
+      line: "START=yes"
+    - regexp: "^MECHANISMS.*=.*$"
+      line: 'MECHANISMS="shadow"'
 
 - name: Add postfix user to sasl group
   user:
     name: postfix
     groups: sasl
-    append: yes
+    append: true
 
 - name: Copy fix_saslauthd.sh script
   copy:
@@ -74,6 +77,8 @@
 - name: Install email-to-telegram git version via pip
   pip:
     name: git+https://github.com/ItsNotGoodName/email-to-telegram.git
+    state: latest
+  notify: Restart email-to-telegram
 
 - name: Create email-to-telegram config directory
   file:
@@ -97,4 +102,4 @@
   systemd:
     name: email-to-telegram
     state: started
-    enabled: yes
+    enabled: true
