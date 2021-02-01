@@ -1,12 +1,13 @@
 ---
 - name: Install saslauthd, postfix, pip3, git
-  package:
+  apt:
     name:
       - postfix
       - sasl2-bin
       - python3-pip
       - git
     state: present
+  tags: apt
 
 - name: Start and enable postfix
   service:
