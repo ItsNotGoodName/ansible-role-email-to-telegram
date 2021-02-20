@@ -92,6 +92,7 @@
     dest: /etc/email-to-telegram/config.ini
     owner: telegram
     mode: 0600
+  notify: Restart email-to-telegram
 
 - name: Copy email-to-telegram service
   template:
