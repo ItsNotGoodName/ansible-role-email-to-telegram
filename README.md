@@ -9,11 +9,13 @@ Debian 10.
 # API token from BotFather
 telegram_token: 12345678
 
-# Matches mail's to_address to a group/channel/chat with chat_id
-# (The bot must be part of the group/channel/chat to be able to send messages)
+# Matches email's 'to_address' and/or 'from_address' to a chat with chat_id.
+# Having no 'to_address' or 'from_address' will allow all emails to that chat.
+# (The bot must be part of the chat to be able to send messages)
 telegram_transfers:
-  - to_address: channel1@telegram.lan
-    chat_id: -1001111111111
-  - to_address: channel2@telegram.lan
-    chat_id: -1002222222222
+  - chat_id: -1001111111111
+    to_address: channel1@telegram.lan
+    from_address: ip-camera@telegram.lan
+    disable_text: False
+    disable_photo: False
 ```
