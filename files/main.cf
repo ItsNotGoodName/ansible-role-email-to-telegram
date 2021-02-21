@@ -3,12 +3,8 @@ alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated reject_unauth_destination
 
-# redirect all telegram domain mail to telegram user
-luser_relay = telegram@telegram.lan
-local_recipient_maps =
-
 # enable sasl authentication when client connects to postfix
 smtpd_sasl_auth_enable = yes
 
-# needed to accept mail from telegram domain
-mydestination = telegram.lan
+# Send ALL mail to telegram
+virtual_alias_maps = pcre:/etc/postfix/virtual

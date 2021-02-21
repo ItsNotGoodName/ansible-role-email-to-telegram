@@ -3,6 +3,7 @@
   apt:
     name:
       - postfix
+      - postfix-pcre
       - sasl2-bin
       - python3-pip
       - git
@@ -20,16 +21,17 @@
     dest: /etc/sasl2
     state: directory
 
-- name: Copy smtpd.conf
+- name: Copy postfix files
   copy:
     src: smtpd.conf
     dest: /etc/postfix/sasl/smtpd.conf
-  notify: Restart postfix
-
-- name: Copy main.cf
-  copy:
-    src: main.cf
-    dest: /etc/postfix/main.cf
+  loop:
+    - src: main.cf
+      dest: /etc/postfix/main.cf
+    - src: virtual
+      dest: /etc/postfix/virtual
+    - src: smtpd.conf
+      dest: /etc/postfix/sasl/smtpd.conf
   notify: Restart postfix
 
 - name: Configure saslauthd
