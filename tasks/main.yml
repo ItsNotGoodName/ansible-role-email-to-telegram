@@ -23,8 +23,8 @@
 
 - name: Copy postfix files
   copy:
-    src: smtpd.conf
-    dest: /etc/postfix/sasl/smtpd.conf
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
   loop:
     - src: main.cf
       dest: /etc/postfix/main.cf
