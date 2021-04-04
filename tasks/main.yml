@@ -8,6 +8,7 @@
       - python3-pip
       - git
     state: present
+  become: true
   tags: apt
 
 - name: Start and enable postfix
@@ -15,11 +16,13 @@
     name: postfix
     state: started
     enabled: true
+  become: true
 
 - name: Create sasl2 config folder
   file:
     dest: /etc/sasl2
     state: directory
+  become: true
 
 - name: Copy postfix files
   copy:
@@ -32,6 +35,7 @@
       dest: /etc/postfix/virtual
     - src: smtpd.conf
       dest: /etc/postfix/sasl/smtpd.conf
+  become: true
   notify: Restart postfix
 
 - name: Configure saslauthd
@@ -45,12 +49,14 @@
       line: "START=yes"
     - regexp: "^MECHANISMS.*=.*$"
       line: 'MECHANISMS="shadow"'
+  become: true
 
 - name: Add postfix user to sasl group
   user:
     name: postfix
     groups: sasl
     append: true
+  become: true
 
 - name: Copy fix_saslauthd.sh script
   copy:
@@ -59,32 +65,38 @@
     mode: 0744
   notify: Restart postfix
   register: copy_fix_saslauthd
+  become: true
 
 - name: Run fix_saslauthd script on reboot
   cron:
     name: Fixes saslauthd run directory
     special_time: reboot
     job: /opt/fix_saslauthd.sh
+  become: true
 
 - name: Run fix_saslauthd script
   command: /opt/fix_saslauthd.sh
   when: copy_fix_saslauthd.changed
+  become: true
 
 - name: Add telegram user and assign it to the mail group
   user:
     name: telegram
     group: mail
+  become: true
 
 - name: Install email-to-telegram git version via pip
   pip:
     name: git+https://github.com/ItsNotGoodName/email-to-telegram.git
     state: latest
   notify: Restart email-to-telegram
+  become: true
 
 - name: Create email-to-telegram config directory
   file:
     path: /etc/email-to-telegram/
     state: directory
+  become: true
 
 - name: Copy config.ini for email-to-telegram
   template:
@@ -93,15 +105,18 @@
     owner: telegram
     mode: 0600
   notify: Restart email-to-telegram
+  become: true
 
 - name: Copy email-to-telegram service
   template:
     src: email-to-telegram.service
     dest: /etc/systemd/system/email-to-telegram.service
   notify: Restart email-to-telegram
+  become: true
 
 - name: Start and enable email-to-telegram
   systemd:
     name: email-to-telegram
     state: started
     enabled: true
+  become: true
