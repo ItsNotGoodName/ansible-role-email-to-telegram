@@ -82,7 +82,7 @@
 - name: Add telegram user and assign it to the mail group
   user:
     name: telegram
-    group: mail
+    groups: mail
   become: true
 
 - name: Install email-to-telegram git version via pip
