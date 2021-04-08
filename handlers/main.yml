@@ -19,3 +19,7 @@
     state: restarted
     daemon-reload: true
   become: true
+
+- name: Run fix saslauthd script
+  command: /opt/fix_saslauthd.sh
+  become: true

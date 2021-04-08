@@ -42,7 +42,7 @@
   lineinfile:
     path: /etc/default/saslauthd
     regexp: "{{ item.regexp }}"
-    line: "{{ item.line}}"
+    line: "{{ item.line }}"
   notify: Restart saslauthd
   with_items:
     - regexp: "^START.*=.*$"
@@ -62,9 +62,10 @@
   copy:
     src: fix_saslauthd.sh
     dest: /opt/
-    mode: 0744
-  notify: Restart postfix
-  register: copy_fix_saslauthd
+    mode: "0744"
+  notify:
+    - Run fix saslauthd script
+    - Restart postfix
   become: true
 
 - name: Run fix_saslauthd script on reboot
@@ -72,11 +73,6 @@
     name: Fixes saslauthd run directory
     special_time: reboot
     job: /opt/fix_saslauthd.sh
-  become: true
-
-- name: Run fix_saslauthd script
-  command: /opt/fix_saslauthd.sh
-  when: copy_fix_saslauthd.changed
   become: true
 
 - name: Add telegram user and assign it to the mail group
@@ -112,16 +108,16 @@
 
 - name: Copy config.ini for email-to-telegram
   template:
-    src: config.ini
+    src: config.ini.j2
     dest: /etc/email-to-telegram/config.ini
     owner: telegram
-    mode: 0600
+    mode: "0600"
   notify: Restart email-to-telegram
   become: true
 
 - name: Copy email-to-telegram service
   template:
-    src: email-to-telegram.service
+    src: email-to-telegram.service.j2
     dest: /etc/systemd/system/email-to-telegram.service
   notify: Restart email-to-telegram
   become: true

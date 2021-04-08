@@ -9,5 +9,5 @@ telegram_transfers:
   - chat_id: -1001111111111
     to_address: channel1@telegram.lan
     from_address: ip-camera@telegram.lan
-    disable_text: False
-    disable_photo: False
+    disable_text: "False"
+    disable_photo: "False"
