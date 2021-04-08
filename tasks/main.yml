@@ -83,6 +83,16 @@
   user:
     name: telegram
     groups: mail
+    append: true
+  become: true
+
+- name: Create mail file for telegram user
+  file:
+    state: touch
+    path: /var/spool/mail/telegram
+    owner: telegram
+    group: mail
+    mode: '0660'
   become: true
 
 - name: Install email-to-telegram git version via pip
