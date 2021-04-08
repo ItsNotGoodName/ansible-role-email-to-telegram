@@ -92,7 +92,9 @@
     path: /var/spool/mail/telegram
     owner: telegram
     group: mail
-    mode: '0660'
+    modification_time: preserve
+    access_time: preserve
+    mode: "0660"
   become: true
 
 - name: Install email-to-telegram git version via pip
