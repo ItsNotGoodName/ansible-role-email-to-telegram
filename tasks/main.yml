@@ -62,7 +62,7 @@
   copy:
     src: fix_saslauthd.sh
     dest: /opt/
-    mode: "0744"
+    mode: "0755"
   notify:
     - Run fix saslauthd script
     - Restart postfix
