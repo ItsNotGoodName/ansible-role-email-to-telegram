@@ -82,6 +82,13 @@
     append: true
   become: true
 
+- name: Set telegram password
+  user:
+    name: telegram
+    password: "{{ telegram_password_hash }}"
+  become: true
+  when: telegram_password_hash | default(false)
+
 - name: Create mail file for telegram user
   file:
     state: touch
