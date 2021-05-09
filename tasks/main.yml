@@ -22,12 +22,14 @@
   file:
     dest: /etc/sasl2
     state: directory
+    mode: 0755
   become: true
 
 - name: Copy postfix files
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
+    mode: 0644
   loop:
     - src: main.cf
       dest: /etc/postfix/main.cf
@@ -58,22 +60,28 @@
     append: true
   become: true
 
-- name: Copy fix_saslauthd.sh script
+- name: Copy saslauthd-postfix
   copy:
-    src: fix_saslauthd.sh
-    dest: /opt/
-    mode: "0755"
+    src: saslauthd-postfix
+    dest: /etc/default/saslauthd-postfix
+    owner: root
+    mode: "0644"
   notify:
-    - Run fix saslauthd script
+    - Restart saslauthd
     - Restart postfix
   become: true
 
-- name: Run fix_saslauthd script on reboot
-  cron:
-    name: Fixes saslauthd run directory
-    special_time: reboot
-    job: /opt/fix_saslauthd.sh
-  become: true
+- name: Register dpkg-statoveride
+  command: dpkg-statoverride --list /var/spool/postfix/var/run/saslauthd
+  register: dpkg_statoveride
+  changed_when: false
+
+- name: Set dpkg-statoveride
+  command: dpkg-statoverride --add root sasl 710 /var/spool/postfix/var/run/saslauthd
+  notify:
+    - Restart saslauthd
+    - Restart postfix
+  when: dpkg_statoveride.stdout != "root sasl 710 /var/spool/postfix/var/run/saslauthd"
 
 - name: Add telegram user and assign it to the mail group
   user:
@@ -97,7 +105,7 @@
     group: mail
     modification_time: preserve
     access_time: preserve
-    mode: "0660"
+    mode: 0660
   become: true
 
 - name: Install email-to-telegram git version via pip
@@ -113,16 +121,16 @@
     state: directory
   become: true
 
-- name: Copy config.ini for email-to-telegram
+- name: Template config.ini for email-to-telegram
   template:
     src: config.ini.j2
     dest: /etc/email-to-telegram/config.ini
     owner: telegram
-    mode: "0600"
+    mode: 0600
   notify: Restart email-to-telegram
   become: true
 
-- name: Copy email-to-telegram service
+- name: Template email-to-telegram service
   template:
     src: email-to-telegram.service.j2
     dest: /etc/systemd/system/email-to-telegram.service
