@@ -3,7 +3,7 @@ Description=Starts email-to-telegram-bot
 After=network.target
 
 [Service]
-User=telegram
+User={{ telegram_user }}
 ExecStart=email-to-telegram
 Restart=on-failure
 RestartSec=5s

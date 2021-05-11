@@ -1,4 +1,4 @@
-# role-email-to-telegram
+# ansible-role-email-to-telegram
 
 Ansible role for setting up 
 [email-to-telegram](https://github.com/ItsNotGoodName/email-to-telegram) on 

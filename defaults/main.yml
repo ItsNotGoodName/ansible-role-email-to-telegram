@@ -11,3 +11,8 @@ telegram_transfers:
     from_address: ip-camera@telegram.lan
     disable_text: "False"
     disable_photo: "False"
+
+telegram_user: telegram
+telegram_git_url: git+https://github.com/ItsNotGoodName/email-to-telegram.git
+telegram_config_directory: /etc/email-to-telegram/
+telegram_config_file: config.ini

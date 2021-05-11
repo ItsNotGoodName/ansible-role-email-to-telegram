@@ -25,20 +25,24 @@
     mode: 0755
   become: true
 
-- name: Copy postfix files
-  copy:
+- name: Template postfix files
+  template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     mode: 0644
   loop:
-    - src: main.cf
+    - src: main.cf.j2
       dest: /etc/postfix/main.cf
-    - src: virtual
+    - src: virtual.j2
       dest: /etc/postfix/virtual
-    - src: smtpd.conf
+    - src: smtpd.conf.j2
       dest: /etc/postfix/sasl/smtpd.conf
+    - src: saslauthd-postfix.j2
+      dest: /etc/default/saslauthd-postfix
   become: true
-  notify: Restart postfix
+  notify:
+    - restart saslauthd
+    - restart postfix
 
 - name: Configure saslauthd
   lineinfile:
@@ -60,23 +64,12 @@
     append: true
   become: true
 
-- name: Copy saslauthd-postfix
-  copy:
-    src: saslauthd-postfix
-    dest: /etc/default/saslauthd-postfix
-    owner: root
-    mode: "0644"
-  notify:
-    - Restart saslauthd
-    - Restart postfix
-  become: true
-
-- name: Register dpkg-statoveride
+- name: Register dpkg-statoveride list
   command: dpkg-statoverride --list /var/spool/postfix/var/run/saslauthd
   register: dpkg_statoveride
   changed_when: false
 
-- name: Set dpkg-statoveride
+- name: Set dpkg-statoveride for saslauthd
   command: dpkg-statoverride --add root sasl 710 /var/spool/postfix/var/run/saslauthd
   notify:
     - Restart saslauthd
@@ -85,14 +78,14 @@
 
 - name: Add telegram user and assign it to the mail group
   user:
-    name: telegram
+    name: "{{ telegram_user }}"
     groups: mail
     append: true
   become: true
 
-- name: Set telegram password
+- name: Set telegram user password
   user:
-    name: telegram
+    name: "{{ telegram_user }}"
     password: "{{ telegram_password_hash }}"
   become: true
   when: telegram_password_hash | default(false)
@@ -100,32 +93,32 @@
 - name: Create mail file for telegram user
   file:
     state: touch
-    path: /var/spool/mail/telegram
-    owner: telegram
+    path: "/var/spool/mail/{{ telegram_user }}"
+    owner: "{{ telegram_user }}"
     group: mail
     modification_time: preserve
     access_time: preserve
     mode: 0660
   become: true
 
-- name: Install email-to-telegram git version via pip
+- name: Install latest version using git
   pip:
-    name: git+https://github.com/ItsNotGoodName/email-to-telegram.git
+    name: "{{ telegram_git_url }}"
     state: latest
   notify: Restart email-to-telegram
   become: true
 
-- name: Create email-to-telegram config directory
+- name: Create config directory
   file:
-    path: /etc/email-to-telegram/
+    path: "{{ telegram_config_directory }}"
     state: directory
   become: true
 
 - name: Template config.ini for email-to-telegram
   template:
     src: config.ini.j2
-    dest: /etc/email-to-telegram/config.ini
-    owner: telegram
+    dest: "{{ telegram_config_directory }}{{ telegram_config_file }}"
+    owner: "{{ telegram_user }}"
     mode: 0600
   notify: Restart email-to-telegram
   become: true
