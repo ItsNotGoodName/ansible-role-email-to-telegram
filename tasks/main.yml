@@ -41,8 +41,8 @@
       dest: /etc/default/saslauthd-postfix
   become: true
   notify:
-    - restart saslauthd
-    - restart postfix
+    - Restart saslauthd
+    - Restart postfix
 
 - name: Configure saslauthd
   lineinfile:
@@ -67,6 +67,7 @@
 - name: Register dpkg-statoveride list
   command: dpkg-statoverride --list /var/spool/postfix/var/run/saslauthd
   register: dpkg_statoveride
+  ignore_errors: true
   changed_when: false
 
 - name: Set dpkg-statoveride for saslauthd
@@ -74,6 +75,7 @@
   notify:
     - Restart saslauthd
     - Restart postfix
+  become: true
   when: dpkg_statoveride.stdout != "root sasl 710 /var/spool/postfix/var/run/saslauthd"
 
 - name: Add telegram user and assign it to the mail group
