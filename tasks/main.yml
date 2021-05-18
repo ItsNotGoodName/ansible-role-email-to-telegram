@@ -103,10 +103,9 @@
     mode: 0660
   become: true
 
-- name: Install latest version using git
+- name: Install email-to-telegram using pip
   pip:
-    name: "{{ telegram_git_url }}"
-    state: latest
+    name: "email-to-telegram=={{ telegram_version }}"
   notify: Restart email-to-telegram
   become: true
 
