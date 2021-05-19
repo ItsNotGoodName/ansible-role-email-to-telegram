@@ -1,7 +1,7 @@
 galaxy_info:
   role_name: email_to_telegram
   author: ItsNotGoodName
-  description: An Ansible role for setting up email-to-telegram and Postfix
+  description: Ansible role for setting up email-to-telegram and Postfix
 
   # If the issue tracker for your role is not on github, uncomment the
   # next line and provide a value
