@@ -2,17 +2,20 @@
 # API token from BotFather
 telegram_token: 12345678
 
-# Matches email's 'to_address' and/or 'from_address' to a chat with chat_id.
-# Having no 'to_address' or 'from_address' will allow all emails to that chat.
-# (The bot must be part of the chat to be able to send messages)
+# Array of transfers, only chat_id is required
 telegram_transfers:
   - chat_id: -1001111111111
-    to_address: channel1@telegram.lan
+    to_address: user@example.com
     from_address: ip-camera@telegram.lan
     disable_text: "False"
     disable_photo: "False"
+    caption_chat_id: -1002222222222
 
+# Name of user that will run email-to-telegram
 telegram_user: telegram
-telegram_version: 1.0.1
+# Version of email-to-telegram to install via pip
+telegram_version: 1.0.2
+# Directory to install config file
 telegram_config_directory: /etc/email-to-telegram/
+# Name of config file
 telegram_config_file: config.ini
