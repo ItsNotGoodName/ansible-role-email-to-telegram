@@ -105,7 +105,7 @@
 
 - name: Install email-to-telegram using pip
   pip:
-    name: "email-to-telegram=={{ telegram_version }}"
+    name: "email-to-telegram<2.0.0"
   notify: Restart email-to-telegram
   become: true
 

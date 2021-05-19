@@ -14,8 +14,6 @@ telegram_transfers:
 
 # Name of user that will run email-to-telegram
 telegram_user: telegram
-# Version of email-to-telegram to install via pip
-telegram_version: 1.1.1
 # Directory to install config file
 telegram_config_directory: /etc/email-to-telegram/
 # Name of config file
