@@ -5,6 +5,7 @@
       - postfix
       - postfix-pcre
       - sasl2-bin
+      - libsasl2-modules
       - python3-pip
       - git
     state: present
